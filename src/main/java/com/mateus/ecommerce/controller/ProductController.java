@@ -1,10 +1,12 @@
 package com.mateus.ecommerce.controller;
 
-import com.mateus.ecommerce.entity.Product;
+import com.mateus.ecommerce.dto.ProductRequest;
+import com.mateus.ecommerce.dto.ProductResponse;
 import com.mateus.ecommerce.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,13 +21,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> listarTodos() {
+    public ResponseEntity<List<ProductResponse>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> buscarPorId(@PathVariable Long id) {
-        Product product = service.buscarPorId(id);
+    public ResponseEntity<ProductResponse> buscarPorId(
+            @PathVariable Long id) {
+
+        ProductResponse product = service.buscarPorId(id);
 
         if (product == null) {
             return ResponseEntity.notFound().build();
@@ -33,25 +37,39 @@ public class ProductController {
 
         return ResponseEntity.ok(product);
     }
-
     @PostMapping
-    public ResponseEntity<Product> salvar(@RequestBody Product product) {
-        Product produtoSalvo = service.salvar(product);
+    public ResponseEntity<ProductResponse> salvar(
+        @Valid @RequestBody ProductRequest request) {
+
+        ProductResponse produtoSalvo = service.salvar(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(produtoSalvo);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        Product product = service.buscarPorId(id);
+   @PutMapping("/{id}")
+public ResponseEntity<ProductResponse> atualizar(
+        @PathVariable Long id,
+        @Valid @RequestBody ProductRequest request) {
 
-        if (product == null) {
+        ProductResponse produtoAtualizado =
+                service.atualizar(id, request);
+
+        if (produtoAtualizado == null) {
             return ResponseEntity.notFound().build();
         }
 
-        service.excluir(id);
+        return ResponseEntity.ok(produtoAtualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        boolean excluido = service.excluir(id);
+
+        if (!excluido) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.noContent().build();
     }

@@ -1,13 +1,27 @@
 package com.mateus.ecommerce.dto;
 
+
+
 import java.math.BigDecimal;
+
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public class ProductRequest {
 
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer stock;
+    @NotBlank(message = "O nome é obrigatório")
+private String name;
+
+@NotBlank(message = "A descrição é obrigatória")
+private String description;
+
+@Positive(message = "O preço deve ser maior que zero")
+private BigDecimal price;
+
+@Min(value = 0, message = "O estoque não pode ser negativo")
+private Integer stock;
 
     public ProductRequest() {
     }
