@@ -3,10 +3,10 @@ package com.mateus.ecommerce.controller;
 import com.mateus.ecommerce.dto.ProductRequest;
 import com.mateus.ecommerce.dto.ProductResponse;
 import com.mateus.ecommerce.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -31,15 +31,12 @@ public class ProductController {
 
         ProductResponse product = service.buscarPorId(id);
 
-        if (product == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(product);
     }
+
     @PostMapping
     public ResponseEntity<ProductResponse> salvar(
-        @Valid @RequestBody ProductRequest request) {
+            @Valid @RequestBody ProductRequest request) {
 
         ProductResponse produtoSalvo = service.salvar(request);
 
@@ -48,28 +45,20 @@ public class ProductController {
                 .body(produtoSalvo);
     }
 
-   @PutMapping("/{id}")
-public ResponseEntity<ProductResponse> atualizar(
-        @PathVariable Long id,
-        @Valid @RequestBody ProductRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductRequest request) {
 
         ProductResponse produtoAtualizado =
                 service.atualizar(id, request);
-
-        if (produtoAtualizado == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(produtoAtualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        boolean excluido = service.excluir(id);
-
-        if (!excluido) {
-            return ResponseEntity.notFound().build();
-        }
+        service.excluir(id);
 
         return ResponseEntity.noContent().build();
     }

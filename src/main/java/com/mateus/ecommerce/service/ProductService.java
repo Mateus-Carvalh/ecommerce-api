@@ -3,6 +3,7 @@ package com.mateus.ecommerce.service;
 import com.mateus.ecommerce.dto.ProductRequest;
 import com.mateus.ecommerce.dto.ProductResponse;
 import com.mateus.ecommerce.entity.Product;
+import com.mateus.ecommerce.exception.ProductNotFoundException;
 import com.mateus.ecommerce.mapper.ProductMapper;
 import com.mateus.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -30,15 +31,12 @@ public class ProductService {
     }
 
     public ProductResponse buscarPorId(Long id) {
-        Product product = repository.findById(id)
-                .orElse(null);
 
-        if (product == null) {
-            return null;
-        }
+    Product product = repository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
 
-        return mapper.toResponse(product);
-    }
+    return mapper.toResponse(product);
+}
 
     public ProductResponse salvar(ProductRequest request) {
         Product product = mapper.toEntity(request);
@@ -49,11 +47,7 @@ public class ProductService {
 
     public ProductResponse atualizar(Long id, ProductRequest request) {
         Product product = repository.findById(id)
-                .orElse(null);
-
-        if (product == null) {
-            return null;
-        }
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
         mapper.updateEntity(request, product);
 
@@ -62,12 +56,10 @@ public class ProductService {
         return mapper.toResponse(produtoAtualizado);
     }
 
-    public boolean excluir(Long id) {
-        if (!repository.existsById(id)) {
-            return false;
-        }
+        public void excluir(Long id) {
+        Product product = repository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
 
-        repository.deleteById(id);
-        return true;
+        repository.delete(product);
     }
 }
