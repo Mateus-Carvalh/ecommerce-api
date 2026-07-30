@@ -25,6 +25,14 @@ public class ProductController {
         return ResponseEntity.ok(service.listarTodos());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> buscarPorNome(
+            @RequestParam String name) {
+
+        List<ProductResponse> produtos = service.buscarPorNome(name);
+        return ResponseEntity.ok(produtos);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> buscarPorId(
             @PathVariable Long id) {

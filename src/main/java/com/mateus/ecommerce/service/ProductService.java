@@ -30,13 +30,19 @@ public class ProductService {
                 .toList();
     }
 
+    public List<ProductResponse> buscarPorNome(String nome) {
+        return repository.findByNameContainingIgnoreCase(nome)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
     public ProductResponse buscarPorId(Long id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
-    Product product = repository.findById(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
-
-    return mapper.toResponse(product);
-}
+        return mapper.toResponse(product);
+    }
 
     public ProductResponse salvar(ProductRequest request) {
         Product product = mapper.toEntity(request);
@@ -56,9 +62,9 @@ public class ProductService {
         return mapper.toResponse(produtoAtualizado);
     }
 
-        public void excluir(Long id) {
+    public void excluir(Long id) {
         Product product = repository.findById(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
         repository.delete(product);
     }
